@@ -99,7 +99,14 @@ struct list
     struct list_elem head;      /* List head. */
     struct list_elem tail;      /* List tail. */
   };
-
+struct block_list
+{
+ 	int block_ticks;
+	struct block_list *prev;
+	struct block_list *next;
+	struct list elem;
+};
+//static struct block_list blockList;
 /* Converts pointer to list element LIST_ELEM into a pointer to
    the structure that LIST_ELEM is embedded inside.  Supply the
    name of the outer structure STRUCT and the member name MEMBER
@@ -123,7 +130,13 @@ struct list
                                  { &(NAME).head, NULL } }
 
 void list_init (struct list *);
+void block_list_init(void);
+void Search_block_list (int64_t ticks);
+void check_loop(void);
 
+struct block_list *foreach_block_list (struct block_list *list,int ticks);
+struct block_list *block_list_tail(struct block_list *list);
+struct block_list *creat_block_list(int ticks);
 /* List traversal. */
 struct list_elem *list_begin (struct list *);
 struct list_elem *list_next (struct list_elem *);

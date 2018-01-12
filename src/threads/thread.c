@@ -91,6 +91,7 @@ thread_init (void)
 
   lock_init (&tid_lock);
   list_init (&ready_list);
+  block_list_init();
   list_init (&all_list);
 
   /* Set up a thread structure for the running thread. */
@@ -107,14 +108,14 @@ thread_start (void)
 {
   /* Create the idle thread. */
   struct semaphore idle_started;
-  sema_init (&idle_started, 0); //set it 0,lack of resources in the beginning
-  thread_create ("idle", PRI_MIN, idle, &idle_started); //to ready list
+  sema_init (&idle_started, 0);
+  thread_create ("idle", PRI_MIN, idle, &idle_started);
 
   /* Start preemptive thread scheduling. */
-  intr_enable (); //CLI
+  intr_enable ();
 
   /* Wait for the idle thread to initialize idle_thread. */
-  sema_down (&idle_started); //
+  sema_down (&idle_started);
 }
 
 /* Called by the timer interrupt handler at each timer tick.
@@ -166,7 +167,7 @@ tid_t
 thread_create (const char *name, int priority,
                thread_func *function, void *aux) 
 {
-  struct thread *t;
+struct thread *t;
   struct kernel_thread_frame *kf;
   struct switch_entry_frame *ef;
   struct switch_threads_frame *sf;
@@ -224,7 +225,9 @@ thread_block (void)
   ASSERT (!intr_context ());
   ASSERT (intr_get_level () == INTR_OFF);
 
-  thread_current ()->status = THREAD_BLOCKED;
+  struct thread *t;
+  t=thread_current ();
+  t->status = THREAD_BLOCKED;
   schedule ();
 }
 
@@ -239,6 +242,7 @@ thread_block (void)
 void
 thread_unblock (struct thread *t) 
 {
+
   enum intr_level old_level;
 
   ASSERT (is_thread (t));
@@ -248,7 +252,7 @@ thread_unblock (struct thread *t)
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
   intr_set_level (old_level);
-}
+}  
 
 /* Returns the name of the running thread. */
 const char *
@@ -316,7 +320,7 @@ thread_yield (void)
 
   old_level = intr_disable ();
   if (cur != idle_thread) 
-    list_push_back (&ready_list, &cur->elem); //different to block, ready_list/block_list 
+    list_push_back (&ready_list, &cur->elem);
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);

@@ -375,7 +375,7 @@ intr_handler (struct intr_frame *frame)
     unexpected_interrupt (frame);
 
   /* Complete the processing of an external interrupt. */
-  if (external)  //中断处理结束
+  if (external) 
     {
       ASSERT (intr_get_level () == INTR_OFF);
       ASSERT (intr_context ());
@@ -390,6 +390,7 @@ intr_handler (struct intr_frame *frame)
 
 /* Handles an unexpected interrupt with interrupt frame F.  An
    unexpected interrupt is one that has no registered handler. */
+
 static void
 unexpected_interrupt (const struct intr_frame *f)
 {
