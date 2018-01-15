@@ -101,7 +101,7 @@ struct list
   };
 struct block_list
 {
- 	int block_ticks;
+ 	int64_t block_ticks;
 	struct block_list *prev;
 	struct block_list *next;
 	struct list elem;
@@ -132,11 +132,12 @@ struct block_list
 void list_init (struct list *);
 void block_list_init(void);
 void Search_block_list (int64_t ticks);
-void check_loop(void);
+void check_loop(int64_t ticks);
 
 struct block_list *foreach_block_list (struct block_list *list,int ticks);
 struct block_list *block_list_tail(struct block_list *list);
-struct block_list *creat_block_list(int ticks);
+struct block_list *creat_block_list(int64_t ticks);
+void block_list_insert_ordered(struct block_list *e,struct block_list *tail,int64_t ticks);
 /* List traversal. */
 struct list_elem *list_begin (struct list *);
 struct list_elem *list_next (struct list_elem *);

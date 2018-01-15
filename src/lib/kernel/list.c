@@ -556,7 +556,7 @@ Search_block_list (int64_t ticks)
     struct block_list *b = NULL;
     while(temp)
     {
-        if(temp->block_ticks == ticks)
+        /*if(temp->block_ticks == ticks)
         {
             b = temp;
             break;
@@ -564,32 +564,59 @@ Search_block_list (int64_t ticks)
         else
         {
             temp = temp->next;
-        }
+        }*/
+        if(temp->block_ticks > ticks){
+			break;
+		}
+		else{
+			if(temp->block_ticks == ticks)
+       		{
+            	b = temp;
+            	break;
+        	}
+			temp = temp->next;
+			
+		}
+        
     }
 
     if(b==NULL)
     {
         temp = block_list_tail(&blockList);
         b=creat_block_list(ticks);
-        b->prev = temp;
-        b->next = NULL;
-        temp->next = b;
+		block_list_insert_ordered(b,temp,ticks);
     }
     list_push_back(&(b->elem), &(cur->elem));
     thread_block();
 }
 
+void block_list_insert_ordered(struct block_list *b,struct block_list *tail,int64_t ticks){
+	struct block_list *e = NULL;
+	for(e = (&blockList)->next;;e = e->next){
+		if(e == NULL) {
+			b->prev = tail;
+			b->next = NULL;
+			tail->next = b;
+			break;
+		}
+		else if(e->block_ticks > ticks){ 
+			e->prev->next = b;
+			b->prev = e->prev;
+			e->prev = b;
+			b->next = e;
+			break;
+		}
+	}
+}
 void
-check_loop(void)
+check_loop(int64_t ticks)
 {
     struct block_list *head=&blockList;
     struct block_list *temp=head->next;
     struct block_list *freetemp = NULL;
     while(temp)
     {
-        if(temp->block_ticks>0)
-            (temp->block_ticks)--;
-        if(temp->block_ticks<=0)
+        if(temp->block_ticks == ticks)
         {
             struct list_elem *e;
             struct thread * t;
@@ -613,7 +640,7 @@ check_loop(void)
 }
 
 struct block_list *
-creat_block_list(int ticks)
+creat_block_list(int64_t ticks)
 {
     struct block_list *temp;
     temp=malloc(sizeof(struct block_list));
