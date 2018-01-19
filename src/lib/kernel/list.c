@@ -556,15 +556,6 @@ Search_block_list (int64_t ticks)
     struct block_list *b = NULL;
     while(temp)
     {
-        /*if(temp->block_ticks == ticks)
-        {
-            b = temp;
-            break;
-        }
-        else
-        {
-            temp = temp->next;
-        }*/
         if(temp->block_ticks > ticks){
 			break;
 		}
@@ -575,9 +566,7 @@ Search_block_list (int64_t ticks)
             	break;
         	}
 			temp = temp->next;
-			
 		}
-        
     }
 
     if(b==NULL)
@@ -633,7 +622,7 @@ check_loop(int64_t ticks)
             {
                 temp->next->prev = temp->prev;
             }
-            //free(freetemp); //todo bug?
+				//todo:free?
         }
         temp=temp->next;
     }
